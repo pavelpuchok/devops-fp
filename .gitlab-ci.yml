@@ -1,0 +1,7 @@
+stages:
+  - build-prerequisites
+
+gitlab-build-images:
+  stage: build-prerequisites
+  script: make gitlab-images
+
