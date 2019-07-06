@@ -1,7 +1,12 @@
 stages:
   - build-prerequisites
 
+before_script:
+  - docker login -u ${DOCKER_REGISTRY_USER} -p ${DOCKER_REGISTRY_PASSWORD}
+
 gitlab-build-images:
   stage: build-prerequisites
   script: make gitlab-images
+  tags:
+    - docker
 
