@@ -7,6 +7,7 @@ stages:
   - build-prerequisites
 
 before_script:
+  - apt add --no-cache make=4.2.1-r2
   - docker login -u ${DOCKER_REGISTRY_USER} -p ${DOCKER_REGISTRY_PASSWORD}
 
 gitlab-build-images:
