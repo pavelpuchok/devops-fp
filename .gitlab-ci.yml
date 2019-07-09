@@ -5,9 +5,9 @@ services:
 
 stages:
   - build-prerequisites
-  - build-app
-  - test-app
-  - build-app-artifacts
+  - build
+  - test
+  - release
 
 before_script:
   - docker login -u ${CI_REGISTRY_USER} -p ${CI_REGISTRY_PASSWORD} ${CI_REGISTRY}
@@ -15,25 +15,25 @@ before_script:
 build-base-images:
   stage: build-prerequisites
   script:
-    - docker build -t ${CI_PROJECT_NAME}/dind:${CI_COMMIT_REF_SLUG} gitlab/dockerfiles/dind
-    - docker push ${CI_PROJECT_NAME}/dind:${CI_COMMIT_REF_SLUG}
+    - docker build -t ${CI_REGISTRY_USER}/${CI_PROJECT_NAME}/dind:${CI_COMMIT_REF_SLUG} gitlab/dockerfiles/dind
+    - docker push ${CI_REGISTRY_USER}/${CI_PROJECT_NAME}/dind:${CI_COMMIT_REF_SLUG}
   tags:
     - docker
 
 build-ui:
-  stage: build-app
+  stage: build
   script:
     - docker build -t ${CI_PROJECT_NAME}/ui-builder:${CI_COMMIT_REF_SLUG} --target builder search_engine_ui
     - docker push ${CI_PROJECT_NAME}/ui-builder:${CI_COMMIT_REF_SLUG}
 
 test-ui:
-  stage: test-app
+  stage: test
   script:
     - docker pull -t ${CI_PROJECT_NAME}/ui-builder:${CI_COMMIT_REF_SLUG}
     - docker build -t ${CI_PROJECT_NAME}/ui-test:${CI_COMMIT_REF_SLUG} --target coverage --cache-from ${CI_PROJECT_NAME}/ui-builder:${CI_COMMIT_REF_SLUG} search_engine_ui
 
 build-ui-artifacts:
-  stage: build-app-artifacts
+  stage: release
   script:
     - docker pull -t ${CI_PROJECT_NAME}/ui-builder:${CI_COMMIT_REF_SLUG}
     - docker build -t ${CI_PROJECT_NAME}/ui:${CI_COMMIT_REF_SLUG} --cache-from ${CI_PROJECT_NAME}/ui-builder search_engine_ui
