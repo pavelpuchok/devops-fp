@@ -29,13 +29,13 @@ build-ui:
 test-ui:
   stage: test
   script:
-    - docker pull -t ${CI_REGISTRY_IMAGE}/ui-builder:${CI_COMMIT_REF_SLUG}
+    - docker pull ${CI_REGISTRY_IMAGE}/ui-builder:${CI_COMMIT_REF_SLUG}
     - docker build -t ${CI_REGISTRY_IMAGE}/ui-test:${CI_COMMIT_REF_SLUG} --target coverage --cache-from ${CI_REGISTRY_IMAGE}/ui-builder:${CI_COMMIT_REF_SLUG} search_engine_ui
 
 build-ui-artifacts:
   stage: release
   script:
-    - docker pull -t ${CI_REGISTRY_IMAGE}/ui-builder:${CI_COMMIT_REF_SLUG}
+    - docker pull ${CI_REGISTRY_IMAGE}/ui-builder:${CI_COMMIT_REF_SLUG}
     - docker build -t ${CI_REGISTRY_IMAGE}/ui:${CI_COMMIT_REF_SLUG} --cache-from ${CI_PROJECT_NAME}/ui-builder search_engine_ui
     - docker push ${CI_REGISTRY_IMAGE}/ui:${CI_COMMIT_REF_SLUG}
 
