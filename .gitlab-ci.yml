@@ -1,4 +1,4 @@
-image: docker
+image: ${BASE_IMAGE}
 
 services:
   - docker:dind
@@ -12,30 +12,49 @@ stages:
 before_script:
   - docker login -u ${CI_REGISTRY_USER} -p ${CI_REGISTRY_PASSWORD} ${CI_REGISTRY}
 
+variables:
+  - BASE_IMAGE: ${CI_REGISTRY_IMAGE}/dind:${CI_COMMIT_REF_SLUG}
+
 build-base-images:
+  image: docker
   stage: build-prerequisites
   script:
-    - docker build -t ${CI_REGISTRY_IMAGE}/dind:${CI_COMMIT_REF_SLUG} gitlab/dockerfiles/dind
-    - docker push ${CI_REGISTRY_IMAGE}/dind:${CI_COMMIT_REF_SLUG}
+    - docker build -t ${BASE_IMAGE} gitlab/dockerfiles/dind
+    - docker push ${BASE_IMAGE}
   tags:
     - docker
 
 build-ui:
   stage: build
   script:
-    - docker build -t ${CI_REGISTRY_IMAGE}/ui-builder:${CI_COMMIT_REF_SLUG} --target builder search_engine_ui
-    - docker push ${CI_REGISTRY_IMAGE}/ui-builder:${CI_COMMIT_REF_SLUG}
+    - make build-iu
+
+build-crawler:
+  image: ${BASE_IMAGE}
+  stage: build
+  script:
+    - make build-crawler
 
 test-ui:
+  image: ${BASE_IMAGE}
   stage: test
   script:
-    - docker pull ${CI_REGISTRY_IMAGE}/ui-builder:${CI_COMMIT_REF_SLUG}
-    - docker build -t ${CI_REGISTRY_IMAGE}/ui-test:${CI_COMMIT_REF_SLUG} --target coverage --cache-from ${CI_REGISTRY_IMAGE}/ui-builder:${CI_COMMIT_REF_SLUG} search_engine_ui
+    - make test-ui
 
-build-ui-artifacts:
+test-crawler:
+  image: ${BASE_IMAGE}
+  stage: test
+  script:
+    - make test-crawler
+
+release-ui:
+  image: ${BASE_IMAGE}
   stage: release
   script:
-    - docker pull ${CI_REGISTRY_IMAGE}/ui-builder:${CI_COMMIT_REF_SLUG}
-    - docker build -t ${CI_REGISTRY_IMAGE}/ui:${CI_COMMIT_REF_SLUG} --cache-from ${CI_PROJECT_NAME}/ui-builder search_engine_ui
-    - docker push ${CI_REGISTRY_IMAGE}/ui:${CI_COMMIT_REF_SLUG}
+    - make release-ui
 
+release-crawler:
+  image: ${BASE_IMAGE}
+  stage: release
+  script:
+    - make release-crawler
