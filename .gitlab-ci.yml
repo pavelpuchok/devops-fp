@@ -25,6 +25,8 @@ build-base-images:
     - docker
 
 build-ui:
+  services:
+    - docker:dind
   stage: build
   script:
     - make build-iu
