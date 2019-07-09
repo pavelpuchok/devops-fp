@@ -13,7 +13,7 @@ before_script:
   - docker login -u ${CI_REGISTRY_USER} -p ${CI_REGISTRY_PASSWORD} ${CI_REGISTRY}
 
 variables:
-  - BASE_IMAGE: ${CI_REGISTRY_IMAGE}/dind:${CI_COMMIT_REF_SLUG}
+  BASE_IMAGE: ${CI_REGISTRY_IMAGE}/dind:${CI_COMMIT_REF_SLUG}
 
 build-base-images:
   image: docker
