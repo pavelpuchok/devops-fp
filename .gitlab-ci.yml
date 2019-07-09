@@ -13,7 +13,7 @@ before_script:
   - docker login -u ${CI_REGISTRY_USER} -p ${CI_REGISTRY_PASSWORD} ${CI_REGISTRY}
 
 variables:
-  BASE_IMAGE: ${CI_REGISTRY_IMAGE}/dind:${CI_COMMIT_REF_SLUG}
+  BASE_IMAGE: ${CI_REGISTRY_IMAGE}/docker-build:${CI_COMMIT_REF_SLUG}
 
 build-base-images:
   image: docker
@@ -30,31 +30,26 @@ build-ui:
     - make build-ui
 
 build-crawler:
-  image: ${BASE_IMAGE}
   stage: build
   script:
     - make build-crawler
 
 test-ui:
-  image: ${BASE_IMAGE}
   stage: test
   script:
     - make test-ui
 
 test-crawler:
-  image: ${BASE_IMAGE}
   stage: test
   script:
     - make test-crawler
 
 release-ui:
-  image: ${BASE_IMAGE}
   stage: release
   script:
     - make release-ui
 
 release-crawler:
-  image: ${BASE_IMAGE}
   stage: release
   script:
     - make release-crawler
