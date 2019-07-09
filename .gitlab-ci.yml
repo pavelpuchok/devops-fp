@@ -9,36 +9,33 @@ stages:
   - test-app
   - build-app-artifacts
 
-variables:
-  IMAGE_NAME_PREFIX: ${CI_REGISTRY_USER}/${CI_PROJECT_NAME}
-
 before_script:
   - docker login -u ${CI_REGISTRY_USER} -p ${CI_REGISTRY_PASSWORD} ${CI_REGISTRY}
 
 build-base-images:
   stage: build-prerequisites
   script:
-    - docker build -t ${IMAGE_NAME_PREFIX}/dind:${CI_COMMIT_REF_SLUG} gitlab/dockerfiles/dind
-    - docker push ${IMAGE_NAME_PREFIX}/dind:${CI_COMMIT_REF_SLUG}
+    - docker build -t ${CI_PROJECT_NAME}/dind:${CI_COMMIT_REF_SLUG} gitlab/dockerfiles/dind
+    - docker push ${CI_PROJECT_NAME}/dind:${CI_COMMIT_REF_SLUG}
   tags:
     - docker
 
 build-ui:
   stage: build-app
   script:
-    - docker build -t ${IMAGE_NAME_PREFIX}/ui-builder:${CI_COMMIT_REF_SLUG} --target builder search_engine_ui
-    - docker push ${IMAGE_NAME_PREFIX}/ui-builder:${CI_COMMIT_REF_SLUG}
+    - docker build -t ${CI_PROJECT_NAME}/ui-builder:${CI_COMMIT_REF_SLUG} --target builder search_engine_ui
+    - docker push ${CI_PROJECT_NAME}/ui-builder:${CI_COMMIT_REF_SLUG}
 
 test-ui:
   stage: test-app
   script:
-    - docker pull -t ${IMAGE_NAME_PREFIX}/ui-builder:${CI_COMMIT_REF_SLUG}
-    - docker build -t ${IMAGE_NAME_PREFIX}/ui-test:${CI_COMMIT_REF_SLUG} --target coverage --cache-from ${IMAGE_NAME_PREFIX}/ui-builder:${CI_COMMIT_REF_SLUG} search_engine_ui
+    - docker pull -t ${CI_PROJECT_NAME}/ui-builder:${CI_COMMIT_REF_SLUG}
+    - docker build -t ${CI_PROJECT_NAME}/ui-test:${CI_COMMIT_REF_SLUG} --target coverage --cache-from ${CI_PROJECT_NAME}/ui-builder:${CI_COMMIT_REF_SLUG} search_engine_ui
 
 build-ui-artifacts:
   stage: build-app-artifacts
   script:
-    - docker pull -t ${IMAGE_NAME_PREFIX}/ui-builder:${CI_COMMIT_REF_SLUG}
-    - docker build -t ${IMAGE_NAME_PREFIX}/ui:${CI_COMMIT_REF_SLUG} --cache-from ${IMAGE_NAME_PREFIX}/ui-builder search_engine_ui
-    - docker push ${IMAGE_NAME_PREFIX}/ui:${CI_COMMIT_REF_SLUG}
+    - docker pull -t ${CI_PROJECT_NAME}/ui-builder:${CI_COMMIT_REF_SLUG}
+    - docker build -t ${CI_PROJECT_NAME}/ui:${CI_COMMIT_REF_SLUG} --cache-from ${CI_PROJECT_NAME}/ui-builder search_engine_ui
+    - docker push ${CI_PROJECT_NAME}/ui:${CI_COMMIT_REF_SLUG}
 
