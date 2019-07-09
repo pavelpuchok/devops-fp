@@ -1,0 +1,16 @@
+image: docker
+
+services:
+  - docker:dind
+
+stages:
+  - build-prerequisites
+
+build-base-images:
+  stage: build-prerequisites
+  script:
+    - docker login -u ${CI_REGISTRY_USER} -p ${CI_REGISTRY_PASSWORD} ${CI_REGISTRY}
+    - docker build -t ${CI_REGISTRY}/${CI_PROJECT_NAME}/dind:${CI_COMMIT_REF_SLUG} gitlab/dockerfiles/dind
+    - docker push -u ${CI_REGISTRY}/${CI_PROJECT_NAME}/dind:${CI_COMMIT_REF_SLUG}
+  tags:
+    - docker
