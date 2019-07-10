@@ -8,6 +8,7 @@ stages:
   - build
   - test
   - release
+  - provision
 
 before_script:
   - docker login -u ${CI_REGISTRY_USER} -p ${CI_REGISTRY_PASSWORD} ${CI_REGISTRY}
@@ -34,15 +35,6 @@ build-crawler:
   script:
     - make build-crawler
 
-build-infra:
-  variables:
-    TF_VARS_FILE: vars.auto.tfvars
-  stage: build
-  script:
-    - cd infra/terraform
-    - terraform init -input=false
-    - terraform plan -input=false
-
 test-ui:
   stage: test
   script:
@@ -62,3 +54,15 @@ release-crawler:
   stage: release
   script:
     - make release-crawler
+
+provision-infra:
+  variables:
+    TF_VARS_FILE: vars.auto.tfvars
+  stage: provision
+  script:
+    - cd infra/terraform
+    - echo project_id = \"${GOOGLE_PROJECT}\" >> ${TF_VARS_FILE}
+    - echo credentials = \"${GOOGLE_APPLICATION_CREDENTIALS}\" >> ${TF_VARS_FILE}
+    - echo ssh_key = \"${GCP_INSTANCE_PUBLIC_KEY}\" >> ${TF_VARS_FILE}
+    - terraform init -input=false
+    - terraform apply -input=false
