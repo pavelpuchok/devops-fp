@@ -40,8 +40,8 @@ build-infra:
   stage: build
   script:
     - cd infra/terraform
-    - terraform init --input=false
-    - terraform plan --auto-approve --input=false
+    - terraform init -input=false
+    - terraform plan -auto-approve -input=false
 
 test-ui:
   stage: test
