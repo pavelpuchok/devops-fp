@@ -35,15 +35,18 @@ build-crawler:
     - make build-crawler
 
 build-infra:
+  variables:
+    TF_VARS_FILE: vars.auto.tfvars
   stage: build
   script:
     - cd infra/terraform
-    - echo "project_id = \"${GCP_PROJECT_ID}\"" >> vars.auto.tfvars
-    - echo "credentials = \"${GCP_CREDENTIALS_FILE}\"" >> vars.auto.tfvars
-    - echo "ssh_key = \"${GCP_INSTANCE_PUBLIC_KEY}\"" >> vars.auto.tfvars
-    - cat vars.auto.tfvars
-    - terraform init -input=false
-    - terraform plan -input=false
+    - echo "project_id = \"${GCP_PROJECT_ID}\"" >> ${TF_VARS_FILE}
+    - echo "credentials = \"${GCP_CREDENTIALS_FILE}\"" >> ${TF_VARS_FILE}
+    - echo "ssh_key = \"${GCP_INSTANCE_PUBLIC_KEY}\"" >> ${TF_VARS_FILE}
+    - cat TF_VARS_FILE
+    - echo $(wc -l ${GCP_CREDENTIALS_FILE})
+    - terraform init --input=false
+    - terraform plan --auto-approve --input=false
 
 test-ui:
   stage: test
