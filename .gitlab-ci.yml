@@ -19,7 +19,7 @@ build-base-images:
   image: docker
   stage: build-prerequisites
   script:
-    - docker build -t ${BASE_IMAGE} gitlab/dockerfiles/dind
+    - docker build -t ${BASE_IMAGE} gitlab/dockerfiles/docker-build
     - docker push ${BASE_IMAGE}
   tags:
     - docker
