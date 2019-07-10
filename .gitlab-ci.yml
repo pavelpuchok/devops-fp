@@ -41,7 +41,7 @@ build-infra:
   script:
     - cd infra/terraform
     - terraform init -input=false
-    - terraform plan -auto-approve -input=false
+    - terraform plan -input=false
 
 test-ui:
   stage: test
