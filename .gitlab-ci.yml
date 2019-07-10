@@ -56,14 +56,10 @@ release-crawler:
     - make release-crawler
 
 provision-infra:
-  variables:
-    TF_VARS_FILE: vars.auto.tfvars
   stage: provision
   script:
-    - cd infra/terraform
-    - echo project_id = \"${GOOGLE_PROJECT}\" >> ${TF_VARS_FILE}
-    - echo credentials = \"${GOOGLE_APPLICATION_CREDENTIALS}\" >> ${TF_VARS_FILE}
-    - echo ssh_key = \"${GCP_INSTANCE_PUBLIC_KEY}\" >> ${TF_VARS_FILE}
-    - terraform init -input=false
-    - terraform plan -out tfplan -input=false
-    - terraform apply -input=false tfplan
+    - make provision-infra-create-vars
+    - make provision-infra-init
+    - make provision-infra-select-workspace
+    - make provision-infra-plan
+    - make provision-infra-apply
