@@ -43,7 +43,7 @@ build-infra:
     - echo "project_id = \"${GCP_PROJECT_ID}\"" >> ${TF_VARS_FILE}
     - echo "credentials = \"${GCP_CREDENTIALS_FILE}\"" >> ${TF_VARS_FILE}
     - echo "ssh_key = \"${GCP_INSTANCE_PUBLIC_KEY}\"" >> ${TF_VARS_FILE}
-    - cat TF_VARS_FILE
+    - cat ${TF_VARS_FILE}
     - echo $(wc -l ${GCP_CREDENTIALS_FILE})
     - terraform init --input=false
     - terraform plan --auto-approve --input=false
