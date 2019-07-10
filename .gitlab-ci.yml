@@ -42,7 +42,6 @@ build-infra:
     - echo "credentials = \"${GCP_CREDENTIALS_FILE}\"" >> vars.auto.tfvar
     - echo "ssh_key = \"${GCP_INSTANCE_PUBLIC_KEY}\"" >> vars.auto.tfvar
     - terraform init -input=false
-    - terraform plan -input=false
 
 test-ui:
   stage: test
