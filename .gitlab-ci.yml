@@ -65,4 +65,5 @@ provision-infra:
     - echo credentials = \"${GOOGLE_APPLICATION_CREDENTIALS}\" >> ${TF_VARS_FILE}
     - echo ssh_key = \"${GCP_INSTANCE_PUBLIC_KEY}\" >> ${TF_VARS_FILE}
     - terraform init -input=false
-    - terraform apply -input=false
+    - terraform plan -out tfplan -input=false
+    - terraform apply -input=false tfplan
