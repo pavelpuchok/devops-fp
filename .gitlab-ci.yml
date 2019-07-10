@@ -45,7 +45,7 @@ build-infra:
     - echo "ssh_key = \"${GCP_INSTANCE_PUBLIC_KEY}\"" >> ${TF_VARS_FILE}
     - cat ${TF_VARS_FILE}
     - echo $(wc -l ${GCP_CREDENTIALS_FILE})
-    - terraform init --input=false
+    - terraform init --input=false --var-file=${TF_VARS_FILE}
     - terraform plan --auto-approve --input=false
 
 test-ui:
