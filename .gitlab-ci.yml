@@ -40,13 +40,7 @@ build-infra:
   stage: build
   script:
     - cd infra/terraform
-    - cp ${GCP_CREDENTIALS_FILE} credentials.json
-    - echo "project_id = \"${GCP_PROJECT_ID}\"" >> ${TF_VARS_FILE}
-    - echo "credentials = \"credentials.json\"" >> ${TF_VARS_FILE}
-    - echo "ssh_key = \"${GCP_INSTANCE_PUBLIC_KEY}\"" >> ${TF_VARS_FILE}
-    - cat ${TF_VARS_FILE}
-    - echo $(wc -l ${GCP_CREDENTIALS_FILE})
-    - terraform init --input=false --var-file=${TF_VARS_FILE}
+    - terraform init --input=false
     - terraform plan --auto-approve --input=false
 
 test-ui:
