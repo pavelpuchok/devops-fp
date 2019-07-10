@@ -38,9 +38,11 @@ build-infra:
   stage: build
   script:
     - cd infra/terraform
-    - echo "project_id = \"${GCP_PROJECT_ID}\"" >> vars.auto.tfvar
-    - echo "ssh_key = \"${GCP_INSTANCE_PUBLIC_KEY}\"" >> vars.auto.tfvar
+    - echo "project_id = \"${GCP_PROJECT_ID}\"" >> vars.auto.tfvars
+    - echo "credentials = \"${GCP_CREDENTIALS_FILE}\"" >> vars.auto.tfvars
+    - echo "ssh_key = \"${GCP_INSTANCE_PUBLIC_KEY}\"" >> vars.auto.tfvars
     - terraform init -input=false
+    - terraform plan -input=false
 
 test-ui:
   stage: test
