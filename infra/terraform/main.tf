@@ -4,11 +4,11 @@ data "google_compute_image" "image_name" {
 }
 
 resource "google_compute_instance" "instance" {
-  name         = var.machine_name
+  name         = "${terraform.workspace}-${var.machine_name}"
   zone         = var.zone
   machine_type = var.machine_type
 
-  tags = var.tags
+  tags = formatlist("${terraform.workspace}-%s", var.tags)
 
   network_interface {
     subnetwork = google_compute_subnetwork.subnetwork.self_link
