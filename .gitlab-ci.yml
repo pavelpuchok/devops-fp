@@ -24,16 +24,22 @@ build-base-images:
     - docker push ${BASE_IMAGE}
   tags:
     - docker
+  only:
+    - merge_requests
 
 build-ui:
   stage: build
   script:
     - make build-ui
+  only:
+    - merge_requests
 
 build-crawler:
   stage: build
   script:
     - make build-crawler
+  only:
+    - merge_requests
 
 test-ui:
   stage: test
@@ -53,11 +59,15 @@ release-ui:
   stage: release
   script:
     - make release-ui
+  only:
+    - merge_requests
 
 release-crawler:
   stage: release
   script:
     - make release-crawler
+  only:
+    - merge_requests
 
 provision-staging-infra:
   stage: provision
