@@ -52,7 +52,7 @@ infra-workspace:
 		terraform workspace new ${TF_WORKSPACE} || terraform workspace select ${TF_WORKSPACE}
 
 infra-validation:
-	cd ${TF_WORKING_DIR}; terraform validate -input=false
+	cd ${TF_WORKING_DIR}; terraform validate
 
 infra-planning:
 	cd ${TF_WORKING_DIR}; terraform plan -out ${TF_PLAN_FILE} -input=false
@@ -60,3 +60,5 @@ infra-planning:
 infra-applying:
 	cd ${TF_WORKING_DIR}; terraform apply -input=false ${TF_PLAN_FILE}
 
+infra-destroy-planning:
+	cd ${TF_WORKING_DIR}; terraform plan -out ${TF_PLAN_FILE} -input=false -destroy

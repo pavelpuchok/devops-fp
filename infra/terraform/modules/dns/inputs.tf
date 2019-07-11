@@ -1,6 +1,6 @@
 variable "dns_name" {
   type        = "string"
-  description = "DNS name"
+  description = "DNS name with followed dot. For ex. example.com."
 }
 
 variable "address" {
@@ -13,14 +13,14 @@ variable "dns_zone_name" {
   description = "GCP DNS public zone name"
 }
 
-variable "count" {
-  type        = "number"
-  default     = 1
-  description = "Count of all resource. Set to 0 if should not be created"
-}
-
 variable "ttl" {
-  type        = "number"
+  type        = number
   default     = 300
   description = "DNS TTL"
+}
+
+variable "enabled" {
+  type        = bool
+  default     = true
+  description = "Should or not to create resources."
 }

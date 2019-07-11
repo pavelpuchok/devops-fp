@@ -33,11 +33,6 @@ variable "image" {
   description = "GCP instance image name, family or self_Link"
 }
 
-variable "external_address_name" {
-  type        = "string"
-  description = "GCP external address name"
-}
-
 variable "ssh_keys" {
   type        = "string"
   description = "SSH keys to access bastion in format <username>:<ssh_key>;<username>:<ssh_key>"
@@ -60,8 +55,8 @@ variable "source_ranges" {
   description = "Source range to access bastion SSH port"
 }
 
-variable "internal_target_ranges" {
-  type        = list(string)
-  default     = ["0.0.0.0/0"]
-  description = "Ranges which can be accessed from bastion"
+variable "enabled" {
+  type        = bool
+  default     = true
+  description = "Should or not to create resources."
 }
