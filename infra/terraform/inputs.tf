@@ -13,6 +13,11 @@ variable "ssh_key" {
   description = "SSH public key for accessing managed instances"
 }
 
+variable "dns_name" {
+  type        = "string"
+  description = "GCP DNS public name (domain name)"
+}
+
 variable "zone" {
   type        = "string"
   default     = "europe-west1-b"
@@ -37,6 +42,12 @@ variable "machine_type" {
   description = "GCP Machine Type"
 }
 
+variable "frontend_machine_type" {
+  type        = "string"
+  default     = "f1-micro"
+  description = "GCP Machine Type for frontend instance"
+}
+
 variable "image_project" {
   type        = "string"
   default     = "ubuntu-os-cloud"
@@ -51,7 +62,13 @@ variable "image_family" {
 
 variable "tags" {
   type        = list(string)
-  default     = ["manager", "worker", "docker", "ssh"]
+  default     = ["manager", "worker", "docker"]
+  description = "GCP instance tags"
+}
+
+variable "tags_frontend" {
+  type        = list(string)
+  default     = ["http"]
   description = "GCP instance tags"
 }
 
@@ -77,4 +94,22 @@ variable "external_address_name" {
   type        = "string"
   default     = "swarm-public-address"
   description = "GCP subnetwork range"
+}
+
+variable "dns_zone_name" {
+  type        = "string"
+  default     = "swarm-public-zone"
+  description = "GCP DNS public zone name"
+}
+
+variable "bastion_instance_name" {
+  type        = "string"
+  default     = "bastion"
+  description = "GCP DNS public zone name"
+}
+
+variable "bastion_instance_tag" {
+  type        = "string"
+  default     = "bastion"
+  description = "GCP DNS public zone name"
 }

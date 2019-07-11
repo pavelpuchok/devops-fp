@@ -42,6 +42,7 @@ infra-vars:
 	cd ${TF_WORKING_DIR}; echo project_id = \"${GOOGLE_PROJECT}\" >> ${TF_VARS_FILE}
 	cd ${TF_WORKING_DIR}; echo credentials = \"${GOOGLE_APPLICATION_CREDENTIALS}\" >> ${TF_VARS_FILE}
 	cd ${TF_WORKING_DIR}; echo ssh_key = \"${GCP_INSTANCE_PUBLIC_KEY}\" >> ${TF_VARS_FILE}
+	cd ${TF_WORKING_DIR}; echo dns_name = \"${DNS_NAME}\" >> ${TF_VARS_FILE}
 
 infra-initialization:
 	cd ${TF_WORKING_DIR}; terraform init -input=false
