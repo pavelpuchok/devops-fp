@@ -39,11 +39,15 @@ test-ui:
   stage: test
   script:
     - make test-ui
+  only:
+    - merge_requests
 
 test-crawler:
   stage: test
   script:
     - make test-crawler
+  only:
+    - merge_requests
 
 release-ui:
   stage: release
@@ -55,11 +59,26 @@ release-crawler:
   script:
     - make release-crawler
 
-provision-infra:
+provision-staging-infra:
   stage: provision
   script:
-    - make provision-infra-create-vars
-    - make provision-infra-init
-    - make provision-infra-select-workspace
-    - make provision-infra-plan
-    - make provision-infra-apply
+    - make infra-vars
+    - make infra-initialization
+    - TF_WORKSPACE=stage make infra-workspace
+    - make infra-planning
+    - make infra-applying
+  only:
+    - master
+
+provision-production-infra:
+  stage: provision
+  script:
+    - make infra-vars
+    - make infra-initialization
+    - TF_WORKSPACE=stage make infra-workspace
+    - make infra-planning
+    - make infra-applying
+  only:
+    - ^release-
+  except:
+    - branches

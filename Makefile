@@ -8,7 +8,7 @@ CRAWLER_BUILDER_IMAGE = ${REG}/crawler-builder:${TAG}
 CRAWLER_RELASE_IMAGE = ${REG}/crawler:${TAG}
 
 TF_WORKING_DIR = infra/terraform
-TF_WORKSPACE = ${CI_COMMIT_REF_SLUG}
+TF_WORKSPACE := $(if $(TF_WORKSPACE),$(TF_WORKSPACE),$(CI_COMMIT_REF_SLUG))
 TF_PLAN_FILE = tfplan
 TF_VARS_FILE = vars.auto.tfvars
 
@@ -38,21 +38,24 @@ release-crawler:
 	docker build -t ${CRAWLER_RELASE_IMAGE} --cache-from ${CRAWLER_BUILDER_IMAGE} ${CRAWLER_DIR}
 	docker push ${CRAWLER_RELASE_IMAGE}
 
-provision-infra-create-vars:
+infra-vars:
 	cd ${TF_WORKING_DIR}; echo project_id = \"${GOOGLE_PROJECT}\" >> ${TF_VARS_FILE}
 	cd ${TF_WORKING_DIR}; echo credentials = \"${GOOGLE_APPLICATION_CREDENTIALS}\" >> ${TF_VARS_FILE}
 	cd ${TF_WORKING_DIR}; echo ssh_key = \"${GCP_INSTANCE_PUBLIC_KEY}\" >> ${TF_VARS_FILE}
 
-provision-infra-init:
+infra-initialization:
 	cd ${TF_WORKING_DIR}; terraform init -input=false
 
-provision-infra-select-workspace:
+infra-workspace:
 	cd ${TF_WORKING_DIR};\
 		terraform workspace new ${TF_WORKSPACE} || terraform workspace select ${TF_WORKSPACE}
 
-provision-infra-plan:
+infra-validation:
+	cd ${TF_WORKING_DIR}; terraform validate -input=false
+
+infra-planning:
 	cd ${TF_WORKING_DIR}; terraform plan -out ${TF_PLAN_FILE} -input=false
 
-provision-infra-apply:
+infra-applying:
 	cd ${TF_WORKING_DIR}; terraform apply -input=false ${TF_PLAN_FILE}
 
