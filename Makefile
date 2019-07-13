@@ -85,7 +85,7 @@ ansible-vars:
 		${CRAWLER_RELASE_IMAGE}
 
 ansible-initialization: ssh_config ansible_vars
-	pip install -r ${ANSIBLE_WORKING_DIR}/requirements.txt
+	pip3 install -r ${ANSIBLE_WORKING_DIR}/requirements.txt
 	cd ${ANSIBLE_WORKING_DIR}; ansible-galaxy install -r requirements.yml
 
 provision-docker:

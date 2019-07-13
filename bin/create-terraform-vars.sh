@@ -9,7 +9,7 @@ VARS_FILE=$5
 set -e
 
 echo "
-project_id = \"${DOMAIN_NAME}\"
+project_id = \"${PROJECT_ID}\"
 credentials = \"${GOOGLE_APPLICATION_CREDENTIALS}\"
 ssh_key = \"${GCP_INSTANCE_PUBLIC_KEY}\"
 dns_name = \"${DOMAIN_NAME}\"

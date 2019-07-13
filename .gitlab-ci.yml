@@ -9,12 +9,18 @@ stages:
   - test
   - release
   - provision
+  - deploy
 
 before_script:
   - docker login -u ${CI_REGISTRY_USER} -p ${CI_REGISTRY_PASSWORD} ${CI_REGISTRY}
 
 variables:
+  PIP_CACHE_DIR: "$CI_PROJECT_DIR/.cache/pip"
   BASE_IMAGE: ${CI_REGISTRY_IMAGE}/docker-build:${CI_COMMIT_REF_SLUG}
+
+cache:
+  paths:
+    - .cache/pip
 
 build-base-images:
   image: docker
@@ -46,14 +52,20 @@ test-ui:
   script:
     - make test-ui
   only:
-    - merge_requests
+    refs:
+      - merge_requests
+    changes:
+      - src/ui/**/*
 
 test-crawler:
   stage: test
   script:
     - make test-crawler
   only:
-    - merge_requests
+    refs:
+      - merge_requests
+    changes:
+      - src/crawler/**/*
 
 release-ui:
   stage: release
@@ -74,21 +86,76 @@ provision-staging-infra:
   script:
     - make infra-vars
     - make infra-initialization
-    - TF_WORKSPACE=stage make infra-workspace
+    - make infra-workspace
     - make infra-planning
     - make infra-applying
+    - make ansible-initialization
+    - make provision-docker
   only:
-    - master
+    - branches
+  cache:
+    key: ${CI_JOB_STAGE}-${CI_COMMIT_REF_SLUG}
+    paths:
+      - infra/ansible/ssh.conf
+      - infra/ansible/vars.auto.yml
+      - infra/terraform/vars.auto.tfvars
 
 provision-production-infra:
   stage: provision
   script:
     - make infra-vars
     - make infra-initialization
-    - TF_WORKSPACE=stage make infra-workspace
+    - TF_WORKSPACE=production make infra-workspace
     - make infra-planning
     - make infra-applying
+    - make ansible-initialization
+    - make provision-full
   only:
     - ^release-
   except:
     - branches
+  cache:
+    key: ${CI_JOB_STAGE}-${CI_COMMIT_REF_SLUG}
+    paths:
+      - infra/ansible/ssh.conf
+      - infra/ansible/vars.auto.yml
+      - infra/terraform/vars.auto.tfvars
+
+deploy-staging-services:
+  stage: deploy
+  script:
+    - make deploy
+  only:
+    - branches
+  environment:
+    name: review/$CI_COMMIT_REF_NAME
+    url: https://$DOMAIN_NAME/dev/$CI_COMMIT_REF_NAME-swarm-node.europe-west1-b.c.${GOOGLE_PROJECT}.internal
+    on_stop: stop-staging-infra
+  cache:
+    key: ${CI_JOB_STAGE}-${CI_COMMIT_REF_SLUG}
+
+deploy-production-services:
+  stage: deploy
+  script:
+    - make deploy
+  environment:
+    name: production
+    url: https://$DOMAIN_NAME/
+  only:
+    - ^release-
+  except:
+    - branches
+  cache:
+    key: ${CI_JOB_STAGE}-${CI_COMMIT_REF_SLUG}
+
+
+destroy-infra:
+  stage: deploy
+  script:
+    - make infra-destroy-planning
+    - make infra-applying
+  environment:
+    name: review/$CI_COMMIT_REF_NAME
+    action: stop
+  cache:
+    key: ${CI_JOB_STAGE}-${CI_COMMIT_REF_SLUG}
