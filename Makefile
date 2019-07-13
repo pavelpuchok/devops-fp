@@ -84,7 +84,7 @@ ansible-vars:
 		${UI_RELASE_IMAGE} \
 		${CRAWLER_RELASE_IMAGE}
 
-ansible-initialization: ssh_config ansible_vars
+ansible-initialization: ssh-config ansible-vars
 	pip3 install -r ${ANSIBLE_WORKING_DIR}/requirements.txt
 	cd ${ANSIBLE_WORKING_DIR}; ansible-galaxy install -r requirements.yml
 
