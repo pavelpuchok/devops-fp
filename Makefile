@@ -10,9 +10,12 @@ CRAWLER_RELASE_IMAGE = ${REG}/crawler:${TAG}
 TF_WORKING_DIR = infra/terraform
 TF_WORKSPACE := $(if $(TF_WORKSPACE),$(TF_WORKSPACE),$(CI_COMMIT_REF_SLUG))
 TF_PLAN_FILE = tfplan
-TF_VARS_FILE = vars.auto.tfvars
+TF_VARS_FILE = ${TF_WORKING_DIR}/vars.auto.tfvars
 
 ANSIBLE_WORKING_DIR = infra/ansible
+ANSIBLE_VARS_FILE_NAME = vars.auto.yml
+ANSIBLE_VARS_FILE = ${ANSIBLE_WORKING_DIR}/${ANSIBLE_VARS_FILE_NAME}
+ANSIBLE_EXTRA_ARGS = --extra-vars "@${ANSIBLE_VARS_FILE_NAME}"
 
 build-ui:
 	docker build -t ${UI_BUILDER_IMAGE} --target builder ${UI_DIR}
@@ -41,7 +44,12 @@ release-crawler:
 	docker push ${CRAWLER_RELASE_IMAGE}
 
 infra-vars:
-	sh bin/create-terraform-vars.sh ${GOOGLE_PROJECT} ${GOOGLE_APPLICATION_CREDENTIALS} ${GCP_INSTANCE_PUBLIC_KEY} ${DOMAIN_NAME} ${TF_VARS_FILE}
+	sh bin/create-terraform-vars.sh\
+		${GOOGLE_PROJECT}\
+		${GOOGLE_APPLICATION_CREDENTIALS}\
+		${GCP_INSTANCE_PUBLIC_KEY}\
+		${DOMAIN_NAME}\
+		${TF_VARS_FILE}
 
 infra-initialization:
 	cd ${TF_WORKING_DIR}; terraform init -input=false
@@ -66,15 +74,26 @@ ssh-config:
 	sh bin/create-ssh-config.sh ${ANSIBLE_WORKING_DIR} ${ANSIBLE_PRIVATE_KEY_FILE} ${TF_WORKING_DIR}
 
 ansible-vars:
-	sh bin/create-ansible-vars.sh ${ANSIBLE_WORKING_DIR} ${DOMAIN_NAME} ${TF_WORKING_DIR}
+	sh bin/create-ansible-vars.sh \
+		${DOMAIN_NAME} \
+		${TF_WORKING_DIR} \
+		${ANSIBLE_VARS_FILE} \
+		${CI_REGISTRY} \
+		${CI_REGISTRY_USER} \
+		${CI_REGISTRY_PASSWORD} \
+		${UI_RELASE_IMAGE} \
+		${CRAWLER_RELASE_IMAGE}
 
 ansible-initialization: ssh_config ansible_vars
 	pip install -r ${ANSIBLE_WORKING_DIR}/requirements.txt
 	cd ${ANSIBLE_WORKING_DIR}; ansible-galaxy install -r requirements.yml
 
 provision-docker:
-	cd ${ANSIBLE_WORKING_DIR}; GCP_SERVICE_ACCOUNT_FILE=${GOOGLE_APPLICATION_CREDENTIALS} ansible-playbook --extra-vars="@vars.auto.yml" playbooks/docker.yml
+	cd ${ANSIBLE_WORKING_DIR}; GCP_SERVICE_ACCOUNT_FILE=${GOOGLE_APPLICATION_CREDENTIALS} ansible-playbook ${ANSIBLE_EXTRA_ARGS} playbooks/docker.yml
 
 provision-full:
-	cd ${ANSIBLE_WORKING_DIR}; GCP_SERVICE_ACCOUNT_FILE=${GOOGLE_APPLICATION_CREDENTIALS} ansible-playbook --extra-vars="@vars.auto.yml" playbooks/site.yml
+	cd ${ANSIBLE_WORKING_DIR}; GCP_SERVICE_ACCOUNT_FILE=${GOOGLE_APPLICATION_CREDENTIALS} ansible-playbook ${ANSIBLE_EXTRA_ARGS} playbooks/site.yml
+
+deploy:
+	cd ${ANSIBLE_WORKING_DIR}; GCP_SERVICE_ACCOUNT_FILE=${GOOGLE_APPLICATION_CREDENTIALS} ansible-playbook ${ANSIBLE_EXTRA_ARGS} playbooks/deploy.yml
 

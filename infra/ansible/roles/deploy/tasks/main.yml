@@ -1,0 +1,15 @@
+---
+- name: Copy docker-compose
+  template:
+    src: docker-compose.yml.j2
+    dest: "{{ ansible_user_dir }}/docker-compose.yml"
+- name: Login to own registry
+  docker_login:
+    registry: "{{ docker_registry }}"
+    username: "{{ docker_registry_user }}"
+    password: "{{ docker_registry_password }}"
+- name: Run services
+  become: true
+  docker_compose:
+    project_src: "{{ ansible_user_dir }}"
+    state: present

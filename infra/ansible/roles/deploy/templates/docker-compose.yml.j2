@@ -1,0 +1,41 @@
+version: "3.3"
+services:
+  mongo:
+    image: mongo:4.0.10
+    networks:
+      - mongo
+    volumes:
+      - mongo:/var/lib/rabbitmq
+  rmq:
+    image: rabbitmq:3.7.16
+    environment:
+      RABBITMQ_DEFAULT_USER: crawler
+      RABBITMQ_DEFAULT_PASS: crawler
+    networks:
+      - rmq
+    volumes:
+      - rmq:/var/lib/rabbitmq
+  ui:
+    image: {{ ui_image }}
+    networks:
+      - mongo
+      - ui
+    ports:
+      - 80:8000
+  crawler:
+    image: {{ crawler_image }}
+    depends_on:
+      - mongo
+      - rmq
+    networks:
+      - mongo
+      - rmq
+
+volumes:
+  rmq:
+  mongo:
+
+networks:
+  rmq:
+  mongo:
+  ui:
