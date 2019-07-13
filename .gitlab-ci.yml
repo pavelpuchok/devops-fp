@@ -130,7 +130,7 @@ deploy-staging-services:
   environment:
     name: review/$CI_COMMIT_REF_NAME
     url: https://$DOMAIN_NAME/dev/$CI_COMMIT_REF_NAME-swarm-node.europe-west1-b.c.${GOOGLE_PROJECT}.internal
-    on_stop: stop-staging-infra
+    on_stop: destroy-infra
   cache:
     key: ${CI_JOB_STAGE}-${CI_COMMIT_REF_SLUG}
 
