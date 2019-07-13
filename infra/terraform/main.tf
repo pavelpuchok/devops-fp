@@ -19,6 +19,10 @@ resource "google_compute_instance" "instance" {
       image = data.google_compute_image.image_name.self_link
     }
   }
+
+  metadata = {
+    ssh-keys = "appuser:${file(var.ssh_key)}"
+  }
 }
 
 module "frontend" {
