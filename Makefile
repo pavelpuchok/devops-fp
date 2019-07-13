@@ -8,7 +8,7 @@ CRAWLER_BUILDER_IMAGE = ${REG}/crawler-builder:${TAG}
 CRAWLER_RELASE_IMAGE = ${REG}/crawler:${TAG}
 
 TF_WORKING_DIR = infra/terraform
-TF_WORKSPACE := $(if $(TF_WORKSPACE),$(TF_WORKSPACE),$(CI_COMMIT_REF_SLUG))
+TF_WORKSPACE_TO_SELECT := $(if $(TF_WORKSPACE_TO_SELECT),$(TF_WORKSPACE_TO_SELECT),$(CI_COMMIT_REF_SLUG))
 TF_PLAN_FILE = tfplan
 TF_VARS_FILE = ${TF_WORKING_DIR}/vars.auto.tfvars
 
@@ -56,7 +56,7 @@ infra-initialization:
 
 infra-workspace:
 	cd ${TF_WORKING_DIR};\
-		terraform workspace new ${TF_WORKSPACE} || terraform workspace select ${TF_WORKSPACE}
+		terraform workspace new ${TF_WORKSPACE_TO_SELECT} || terraform workspace select ${TF_WORKSPACE_TO_SELECT}
 
 infra-validation:
 	cd ${TF_WORKING_DIR}; terraform validate

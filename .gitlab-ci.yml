@@ -105,7 +105,7 @@ provision-production-infra:
   script:
     - make infra-vars
     - make infra-initialization
-    - TF_WORKSPACE=production make infra-workspace
+    - TF_WORKSPACE_TO_SELECT=production make infra-workspace
     - make infra-planning
     - make infra-applying
     - make ansible-initialization
@@ -147,7 +147,6 @@ deploy-production-services:
     - branches
   cache:
     key: ${CI_JOB_STAGE}-${CI_COMMIT_REF_SLUG}
-
 
 destroy-infra:
   stage: deploy
