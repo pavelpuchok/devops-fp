@@ -9,7 +9,7 @@ resource "google_compute_subnetwork" "subnetwork" {
 }
 
 resource "google_compute_firewall" "internal_firewall" {
-  name    = "frontend-to-back-proxy"
+  name    = "${terraform.workspace}-internal_firewall"
   network = google_compute_network.network.name
 
   allow {
