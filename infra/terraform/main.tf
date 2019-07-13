@@ -8,10 +8,12 @@ resource "google_compute_instance" "instance" {
   zone         = var.zone
   machine_type = var.machine_type
 
-  tags = formatlist("${terraform.workspace}-%s", var.tags)
+  tags = formatlist("${terraform.workspace}-%s", concat(var.tags, var.tags_manager))
 
   network_interface {
     subnetwork = google_compute_subnetwork.subnetwork.self_link
+    access_config {
+    }
   }
 
   boot_disk {

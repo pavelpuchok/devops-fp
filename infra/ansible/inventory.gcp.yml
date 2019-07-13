@@ -1,0 +1,13 @@
+plugin: gcp_compute
+auth_kind: serviceaccount
+projects:
+  - pp-devops-fp
+zones:
+  - "europe-west1-b"
+keyed_groups:
+  - key: tags['items'] | map('regex_replace', '.*[-_](docker|manager|worker|frontend|bastion)$', '\1') | list
+    separator: ''
+hostnames: [ 'name' ]
+compose:
+  ansible_host: (name == 'bastion') | ternary(networkInterfaces[0].accessConfigs[0].natIP, networkInterfaces[0].networkIP)
+

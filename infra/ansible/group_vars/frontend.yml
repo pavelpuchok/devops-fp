@@ -1,0 +1,16 @@
+---
+nginx_vhosts:
+  - listen: 80
+    server_name: "{{ domain_name }}"
+    state: present
+    filename: "{{ domain_name }}.conf"
+    extra_parameters: |
+      location ~ /dev/([a-z-_0-9.]*)(.*) {
+          proxy_pass http://$1/$2;
+      }
+      location / {
+          proxy_pass http://{{ swarm_internal_address }};
+      }
+
+nginx_extra_http_options: |
+  resolver 127.0.0.53;

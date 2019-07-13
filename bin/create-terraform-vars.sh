@@ -1,0 +1,16 @@
+#!/usr/bin/env sh
+
+PROJECT_ID=$1
+GOOGLE_APPLICATION_CREDENTIALS=$2
+GCP_INSTANCE_PUBLIC_KEY=$3
+DOMAIN_NAME=$4
+VARS_FILE=$5
+
+set -e
+
+echo "
+project_id = \"${DOMAIN_NAME}\"
+credentials = \"${GOOGLE_APPLICATION_CREDENTIALS}\"
+ssh_key = \"${GCP_INSTANCE_PUBLIC_KEY}\"
+dns_name = \"${DOMAIN_NAME}\"
+" > ${VARS_FILE}

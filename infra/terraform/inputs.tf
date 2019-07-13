@@ -62,7 +62,13 @@ variable "image_family" {
 
 variable "tags" {
   type        = list(string)
-  default     = ["manager", "worker", "docker"]
+  default     = ["worker", "docker"]
+  description = "GCP instance tags"
+}
+
+variable "tags_manager" {
+  type        = list(string)
+  default     = ["manager"]
   description = "GCP instance tags"
 }
 

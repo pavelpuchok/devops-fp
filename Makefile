@@ -12,6 +12,8 @@ TF_WORKSPACE := $(if $(TF_WORKSPACE),$(TF_WORKSPACE),$(CI_COMMIT_REF_SLUG))
 TF_PLAN_FILE = tfplan
 TF_VARS_FILE = vars.auto.tfvars
 
+ANSIBLE_WORKING_DIR = infra/ansible
+
 build-ui:
 	docker build -t ${UI_BUILDER_IMAGE} --target builder ${UI_DIR}
 	docker push ${UI_BUILDER_IMAGE}
@@ -39,10 +41,7 @@ release-crawler:
 	docker push ${CRAWLER_RELASE_IMAGE}
 
 infra-vars:
-	cd ${TF_WORKING_DIR}; echo project_id = \"${GOOGLE_PROJECT}\" >> ${TF_VARS_FILE}
-	cd ${TF_WORKING_DIR}; echo credentials = \"${GOOGLE_APPLICATION_CREDENTIALS}\" >> ${TF_VARS_FILE}
-	cd ${TF_WORKING_DIR}; echo ssh_key = \"${GCP_INSTANCE_PUBLIC_KEY}\" >> ${TF_VARS_FILE}
-	cd ${TF_WORKING_DIR}; echo dns_name = \"${DNS_NAME}\" >> ${TF_VARS_FILE}
+	sh bin/create-terraform-vars.sh ${GOOGLE_PROJECT} ${GOOGLE_APPLICATION_CREDENTIALS} ${GCP_INSTANCE_PUBLIC_KEY} ${DOMAIN_NAME} ${TF_VARS_FILE}
 
 infra-initialization:
 	cd ${TF_WORKING_DIR}; terraform init -input=false
@@ -62,3 +61,20 @@ infra-applying:
 
 infra-destroy-planning:
 	cd ${TF_WORKING_DIR}; terraform plan -out ${TF_PLAN_FILE} -input=false -destroy
+
+ssh-config:
+	sh bin/create-ssh-config.sh ${ANSIBLE_WORKING_DIR} ${ANSIBLE_PRIVATE_KEY_FILE} ${TF_WORKING_DIR}
+
+ansible-vars:
+	sh bin/create-ansible-vars.sh ${ANSIBLE_WORKING_DIR} ${DOMAIN_NAME} ${TF_WORKING_DIR}
+
+ansible-initialization: ssh_config ansible_vars
+	pip install -r ${ANSIBLE_WORKING_DIR}/requirements.txt
+	cd ${ANSIBLE_WORKING_DIR}; ansible-galaxy install -r requirements.yml
+
+provision-docker:
+	cd ${ANSIBLE_WORKING_DIR}; GCP_SERVICE_ACCOUNT_FILE=${GOOGLE_APPLICATION_CREDENTIALS} ansible-playbook --extra-vars="@vars.auto.yml" playbooks/docker.yml
+
+provision-full:
+	cd ${ANSIBLE_WORKING_DIR}; GCP_SERVICE_ACCOUNT_FILE=${GOOGLE_APPLICATION_CREDENTIALS} ansible-playbook --extra-vars="@vars.auto.yml" playbooks/site.yml
+

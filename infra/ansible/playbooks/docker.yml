@@ -1,0 +1,12 @@
+---
+- name: Install docker daemon and compose
+  hosts: docker
+  become: yes
+  pre_tasks:
+    - name: update an packages cache
+      apt:
+        update_cache: yes
+        cache_valid_time: 3600
+  roles:
+    - geerlingguy.pip
+    - geerlingguy.docker
