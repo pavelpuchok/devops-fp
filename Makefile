@@ -1,9 +1,9 @@
 REG = ${CI_REGISTRY_IMAGE}
 TAG = ${CI_COMMIT_REF_SLUG}
-UI_DIR = search_engine_ui
+UI_DIR = src/ui
 UI_BUILDER_IMAGE = ${REG}/ui-builder:${TAG}
 UI_RELASE_IMAGE = ${REG}/ui:${TAG}
-CRAWLER_DIR = search_engine_crawler
+CRAWLER_DIR = src/crawler
 CRAWLER_BUILDER_IMAGE = ${REG}/crawler-builder:${TAG}
 CRAWLER_RELASE_IMAGE = ${REG}/crawler:${TAG}
 
