@@ -84,17 +84,14 @@ ansible-vars:
 		${UI_RELASE_IMAGE} \
 		${CRAWLER_RELASE_IMAGE}
 
-ansible-inventory:
+ansible-initialization: ssh-config ansible-vars ansible-inventory
+	pip3 install -r ${ANSIBLE_WORKING_DIR}/requirements.txt
+	cd ${ANSIBLE_WORKING_DIR}; ansible-galaxy install -r requirements.yml
 	sh bin/create-ansible-inventory.sh \
 		${ANSIBLE_WORKING_DIR} \
 		${GOOGLE_PROJECT} \
 		${GOOGLE_ZONE} \
 		${TF_WORKSPACE_TO_SELECT}
-
-ansible-initialization: ssh-config ansible-vars ansible-inventory
-	pip3 install -r ${ANSIBLE_WORKING_DIR}/requirements.txt
-	cd ${ANSIBLE_WORKING_DIR}; ansible-galaxy install -r requirements.yml
-	sh bin/
 
 provision-docker:
 	cd ${ANSIBLE_WORKING_DIR}; GCP_SERVICE_ACCOUNT_FILE=${GOOGLE_APPLICATION_CREDENTIALS} ansible-playbook ${ANSIBLE_EXTRA_ARGS} playbooks/docker.yml
