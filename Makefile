@@ -71,7 +71,7 @@ infra-destroy-planning:
 	cd ${TF_WORKING_DIR}; terraform plan -out ${TF_PLAN_FILE} -input=false -destroy
 
 ssh-config:
-	sh bin/create-ssh-config.sh ${ANSIBLE_WORKING_DIR} ${ANSIBLE_PRIVATE_KEY_FILE} ${TF_WORKING_DIR}
+	sh bin/create-ssh-config.sh ${ANSIBLE_WORKING_DIR} ${ANSIBLE_PRIVATE_KEY_FILE} ${GOOGLE_PROJECT}
 
 ansible-vars:
 	sh bin/create-ansible-vars.sh \
@@ -97,3 +97,6 @@ provision-full:
 deploy:
 	cd ${ANSIBLE_WORKING_DIR}; GCP_SERVICE_ACCOUNT_FILE=${GOOGLE_APPLICATION_CREDENTIALS} ansible-playbook ${ANSIBLE_EXTRA_ARGS} playbooks/deploy.yml
 
+gcloud-initialization:
+	gcloud auth activate-service-account --key-file ${GOOGLE_APPLICATION_CREDENTIALS}
+	gcloud config set project ${GOOGLE_PROJECT}
