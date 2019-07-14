@@ -71,7 +71,7 @@ infra-destroy-planning:
 	cd ${TF_WORKING_DIR}; terraform plan -out ${TF_PLAN_FILE} -input=false -destroy
 
 ssh-config:
-	sh bin/create-ssh-config.sh ${ANSIBLE_WORKING_DIR} ${GCP_INSTANCE_PRIVATE_KEY} ${GOOGLE_PROJECT}
+	sh bin/create-ssh-config.sh ${ANSIBLE_WORKING_DIR} ${GCP_INSTANCE_PRIVATE_KEY} ${GOOGLE_PROJECT} ${GOOGLE_ZONE}
 
 ansible-vars:
 	sh bin/create-ansible-vars.sh \
@@ -84,9 +84,17 @@ ansible-vars:
 		${UI_RELASE_IMAGE} \
 		${CRAWLER_RELASE_IMAGE}
 
-ansible-initialization: ssh-config ansible-vars
+ansible-inventory:
+	sh bin/create-ansible-vars.sh \
+		${ANSIBLE_WORKING_DIR} \
+		${GOOGLE_PROJECT} \
+		${GOOGLE_ZONE} \
+		${TF_WORKSPACE_TO_SELECT}
+
+ansible-initialization: ssh-config ansible-vars ansible-inventory
 	pip3 install -r ${ANSIBLE_WORKING_DIR}/requirements.txt
 	cd ${ANSIBLE_WORKING_DIR}; ansible-galaxy install -r requirements.yml
+	sh bin/
 
 provision-docker:
 	cd ${ANSIBLE_WORKING_DIR}; GCP_SERVICE_ACCOUNT_FILE=${GOOGLE_APPLICATION_CREDENTIALS} ansible-playbook ${ANSIBLE_EXTRA_ARGS} playbooks/docker.yml

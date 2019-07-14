@@ -100,6 +100,7 @@ provision-staging-infra:
     paths:
       - infra/ansible/ssh.conf
       - infra/ansible/vars.auto.yml
+      - infra/ansible/inventory.gcp.yml
       - infra/terraform/vars.auto.tfvars
 
 provision-production-infra:
@@ -122,11 +123,13 @@ provision-production-infra:
     paths:
       - infra/ansible/ssh.conf
       - infra/ansible/vars.auto.yml
+      - infra/ansible/inventory.gcp.yml
       - infra/terraform/vars.auto.tfvars
 
 deploy-staging-services:
   stage: deploy
   script:
+    - make ansible-initialization
     - make deploy
   only:
     - branches
@@ -140,6 +143,7 @@ deploy-staging-services:
 deploy-production-services:
   stage: deploy
   script:
+    - make ansible-initialization
     - make deploy
   environment:
     name: production
@@ -161,3 +165,4 @@ destroy-infra:
     action: stop
   cache:
     key: ${CI_JOB_STAGE}-${CI_COMMIT_REF_SLUG}
+  when: manual

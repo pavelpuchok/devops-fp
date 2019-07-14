@@ -18,4 +18,3 @@ docker_registry_password: ${PASSWORD}
 ui_image: ${TAG}
 crawler_image: ${TAG}
 " > ${VARS_FILE}
-

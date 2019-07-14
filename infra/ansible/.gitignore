@@ -1,3 +1,4 @@
 roles/geerlingguy*
 ssh.conf
 *auto.yml
+inventory.gcp.yml
