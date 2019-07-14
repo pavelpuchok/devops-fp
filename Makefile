@@ -85,7 +85,7 @@ ansible-vars:
 		${CRAWLER_RELASE_IMAGE}
 
 ansible-inventory:
-	sh bin/create-ansible-vars.sh \
+	sh bin/create-ansible-inventory.sh \
 		${ANSIBLE_WORKING_DIR} \
 		${GOOGLE_PROJECT} \
 		${GOOGLE_ZONE} \
