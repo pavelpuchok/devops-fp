@@ -71,7 +71,7 @@ infra-destroy-planning:
 	cd ${TF_WORKING_DIR}; terraform plan -out ${TF_PLAN_FILE} -input=false -destroy
 
 ssh-config:
-	sh bin/create-ssh-config.sh ${ANSIBLE_WORKING_DIR} ${ANSIBLE_PRIVATE_KEY_FILE} ${GOOGLE_PROJECT}
+	sh bin/create-ssh-config.sh ${ANSIBLE_WORKING_DIR} ${GCP_INSTANCE_PRIVATE_KEY} ${GOOGLE_PROJECT}
 
 ansible-vars:
 	sh bin/create-ansible-vars.sh \
