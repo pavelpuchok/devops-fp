@@ -30,6 +30,9 @@ build-base-images:
     - docker push ${BASE_IMAGE}
   tags:
     - docker
+  only:
+    changes:
+      - gitlab/dockerfiles/docker-build/**
 
 build-ui:
   stage: build
