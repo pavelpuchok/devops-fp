@@ -30,8 +30,6 @@ build-base-images:
     - docker push ${BASE_IMAGE}
   tags:
     - docker
-  only:
-    - merge_requests
 
 build-ui:
   stage: build
